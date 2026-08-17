@@ -107,6 +107,14 @@ Os testes usam fixtures com segredos **propositalmente falsos** (`tests/fixtures
 secret-scanner . --fail-on none
 ```
 
+### Uma prova de conceito inesperada: o GitHub bloqueou o próprio push
+
+Na hora de subir esse repositório, o `git push` foi rejeitado pelo **GitHub Push Protection** — o scanner de segredos do próprio GitHub encontrou os fixtures falsos em `tests/fixtures/` e `tests/test_*.py` (uma AWS Access Key, uma chave de teste da Stripe, um token e um webhook do Slack) e bloqueou o envio, apontando arquivo e linha de cada um.
+
+Ou seja: pra provar que meu detector funciona, teria que ter os textos no formato exato de um segredo real dentro do repositório — e é exatamente esse formato que faz o scanner *deles* disparar também. Não teve como contornar isso com regex mais esperto (o formato "parece uma AWS key" é justamente o que os dois scanners procuram); resolvi liberando cada achado manualmente como falso positivo conhecido pela interface do GitHub, o fluxo pensado exatamente pra esse caso (fixture de teste, não segredo real).
+
+Fica como confirmação de que os fixtures são realistas o suficiente pra validar a ferramenta de verdade — e como lembrete de que qualquer repositório com exemplos de credenciais (documentação, testes, tutoriais) vai esbarrar nisso.
+
 ## Estrutura do projeto
 
 ```
